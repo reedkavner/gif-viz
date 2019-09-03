@@ -121,7 +121,7 @@ $(document).ready(function() {
             // it's text!!!
             // always give text max z
             zIndex = zIndex + 30;
-            $content = $("<div>", { "class": "text post-content" }).text(j.text);
+            $content = $("<div>", { "class": "text post-content" }).html(j.text);
             coords = randomPosition(300, 400, scale);
             $container.css({
                 'width': '400px',
