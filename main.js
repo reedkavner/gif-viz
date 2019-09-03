@@ -123,10 +123,10 @@ $(document).ready(function() {
             // always give text max z
             zIndex = zIndex + 30;
             $content = $("<div>", { "class": "post-content" }).html(j.text);
-            coords = randomPosition(300, 400, scale);
+            coords = randomPosition(400, 400, scale);
             $container.css({
                 'width': '400px',
-                'max-height': '300px'
+                'max-height': '400px'
             });
             $container.addClass('text');
         }
@@ -144,16 +144,23 @@ $(document).ready(function() {
         var $slackname = $("<div>", { "class": "slack-name" }).text(username);
         $container.append($content).append($slackname);
 
+        // set current time for user
+        users[username] = timeNow();
+
+        // add the post to the page (but it won't be displayed until below)
+        $main.append($container);
+
         // display gif/container only once gif has loaded
         // if it's a text post, just show the text
         // TODO handle emoji
-        if ($content.hasClass('gif')) {
+        if ($container.hasClass('gif')) {
             $content.on('load', function() {
-                $container.css({ 'opacity': 1 }).addClass('grow');
-                console.log('showing gif');
+                $container.css({ 'opacity': 1 })
+                .addClass('grow');
             });
         } else {
-            $container.css({ 'opacity': 1 }).addClass('grow');
+                $container.css({ 'opacity': 1 })
+                .addClass('grow');
         }
 
         // clean up when items are done growing
@@ -167,12 +174,6 @@ $(document).ready(function() {
                 }
             }
         });
-
-        // set current time for user
-        users[username] = timeNow();
-
-        // add the post to the page
-        $main.append($container);
     }
 
     // test add new gif
