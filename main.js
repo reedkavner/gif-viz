@@ -111,22 +111,24 @@ $(document).ready(function() {
         // TODO DRY this up with a styleContainer function
         if ('url' in j) {
             // it's a GIF!!
-            $content = $("<img>", { "class": "gif post-content", "src": j.url });
+            $content = $("<img>", { "class": "post-content", "src": j.url });
             coords = randomPosition(j.height, j.width, scale);
             $container.css({
                 'width': (j.width).toString() + 'px',
                 'height': (j.height + nameHeight).toString() + 'px'
             });
+            $container.addClass('gif');
         } else if ('text' in j) {
             // it's text!!!
             // always give text max z
             zIndex = zIndex + 30;
-            $content = $("<div>", { "class": "text post-content" }).html(j.text);
+            $content = $("<div>", { "class": "post-content" }).html(j.text);
             coords = randomPosition(300, 400, scale);
             $container.css({
                 'width': '400px',
                 'max-height': '300px'
             });
+            $container.addClass('text');
         }
 
         // style container div
@@ -147,17 +149,23 @@ $(document).ready(function() {
         // TODO handle emoji
         if ($content.hasClass('gif')) {
             $content.on('load', function() {
-                $container.css({ 'opacity': 1 }).addClass('growing');
+                $container.css({ 'opacity': 1 }).addClass('grow');
                 console.log('showing gif');
             });
         } else {
-            $container.css({ 'opacity': 1 }).addClass('growing');
+            $container.css({ 'opacity': 1 }).addClass('grow');
         }
 
-        // remove from dom when animation finishes
+        // clean up when items are done growing
         $container.on('animationend', function() {
-            console.log('animationend');
-            $(this).remove();
+            if ( $(this).hasClass('text') ){
+                $(this).remove();
+            }else{
+                $(this).addClass('done-growing');
+                if ( $('.done-growing').length > 1 ){
+                    $('.done-growing')[0].remove();
+                }
+            }
         });
 
         // set current time for user

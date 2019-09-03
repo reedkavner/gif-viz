@@ -62,11 +62,11 @@ body {
     height: 100%;
 }
 
-.gif{
+.gif .post-content{
     vertical-align: top;
 }
 
-.text{
+.text .post-content{
     padding: .1em;
     text-align: center;
     color: white;
@@ -75,7 +75,12 @@ body {
     vertical-align: bottom;
 }
 
-.text :not(.slack-emoji){
+.text .post-content .slack-emoji{
+    vertical-align: text-top;
+    height: 1em;
+}
+
+.text .post-content :not(.slack-emoji){
     display: none;
 }
 
@@ -87,14 +92,15 @@ body {
     line-height: 1em;
 }
 
-.growing {
-    animation: grow cubic-bezier(1,0, 1, 0);
-    animation-delay: 2;
+.grow {
+    animation: grow cubic-bezier(1, 0, .5, 1);
+    animation-delay: 2s;
+    animation-fill-mode: forwards;
 }
 
 
 @keyframes grow {
     100% {
-        transform: scale(180);
+        transform: scale(100);
     }
 }
