@@ -2,10 +2,11 @@ $(document).ready(function() {
 
     // Config constants
     const nameHeight = 20; // height of the slackName div in pixels
-    const baseDuration = 10; //  base animation duration before scale is applied in seconds
-    const maxScale = 1.3; // maximum scale
-    const minScale = 0.3; // maximum scale
+    const baseDuration = 25; //  base animation duration in seconds
+    const maxScale = .9; // maximum scale
+    const minScale = 0.2; // maximum scale
     const intervalReset = 10; // time in seconds for when a users gif displays at full scale
+    const spawnaArea = .15 // percentage margin around the screen
 
     const $main = $('#main');
 
@@ -32,24 +33,49 @@ $(document).ready(function() {
     var windowHeight = $(window).height();
     var windowWidth = $(window).width();
 
-    // TODO listen for window size change and recalculate
+    // create a smaller area in the middle of the window to spawn new posts
+    var spawnHeight = windowHeight * (1 - spawnaArea);
+    var spawnHeightOffset = windowHeight - spawnHeight;
+    var spawnWidth = windowWidth * (1 - spawnaArea);
+    var spawnWidthOffset = windowWidth - spawnWidth;
+
+    console.log(spawnHeightOffset, spawnHeight, spawnWidthOffset, spawnWidth);
 
     // keep track of users and when they last posted
     var users = {};
 
-    /// get currect epoch time in seconds
+    // get currect epoch time in seconds
     function timeNow() {
         var now = new Date();
         return Math.round(now.getTime() / 1000);
     }
 
+    // get a random int between two given ints (inclusive)
+    function randomInt(min, max) {
+        console.log(min, max);
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    };
+
     // generate a random position
     function randomPosition(height, width, scale) {
         var totalHeight = height + nameHeight;
+        
+        var top = randomInt(
+            spawnHeightOffset - (totalHeight/2 * (1-scale)), 
+            spawnHeight - (scale * totalHeight) - ((totalHeight / 2) * (1 - scale))
+        );
+
+        var left = randomInt(
+            spawnWidthOffset - (width/2 * (1-scale)),
+            spawnWidth - (scale * width) - ((width / 2) * (1 - scale))
+        );
+
         var coords = {
-            top: Math.floor(Math.random() * (windowHeight - (scale * totalHeight)) - ((totalHeight / 2) * (1 - scale))),
-            right: Math.floor(Math.random() * (windowWidth - (scale * width)) - ((width / 2) * (1 - scale)))
+            'top' : top,
+            'left' : left
         };
+
+        console.log(coords);
         return coords;
     }
 
@@ -62,68 +88,74 @@ $(document).ready(function() {
 
         if (lastPosted === undefined) {
             console.log('new user');
+            zIndex = timeNow();
             scale = maxScale;
         } else {
             var userInterval = timeNow() - lastPosted;
             scale = userInterval / intervalReset;
             scale = Math.min(Math.max(scale, minScale), maxScale);
-            console.log(scale);
+            // adjust z index to favor infrequent posters
+            zIndex = timeNow() + userInterval - intervalReset;
+            zIndex = Math.min(timeNow(), zIndex);
         }
 
         // set the animation duration based on scale
         var duration = (baseDuration * scale).toString() + 's';
 
         // make the container element
-        var $div = $("<div>", { "class": "post-container" });
+        var $container = $("<div>", { "class": "post-container" });
         var coords;
         var $content;
-        
+
         // determine what kind of content
         // TODO DRY this up with a styleContainer function
         if ('url' in j) {
             // it's a GIF!!
             $content = $("<img>", { "class": "gif post-content", "src": j.url });
             coords = randomPosition(j.height, j.width, scale);
-            $div.css({
+            $container.css({
                 'width': (j.width).toString() + 'px',
                 'height': (j.height + nameHeight).toString() + 'px'
             });
         } else if ('text' in j) {
             // it's text!!!
+            // always give text max z
+            zIndex = zIndex + 30;
             $content = $("<div>", { "class": "text post-content" }).text(j.text);
-            var coords = randomPosition(j, scale);
-            coords = randomPosition(500, 600, scale);
-            $div.css({
-                'max-width': '500px',
-                'max-height': '600px'
+            coords = randomPosition(300, 400, scale);
+            $container.css({
+                'width': '400px',
+                'max-height': '300px'
             });
         }
 
-        $div.css({
+        // style container div
+        $container.css({
             'transform': 'scale(' + scale + ')',
             'animation-duration': duration,
             'top': coords.top,
-            'left': coords.right
+            'left': coords.left,
+            'z-index': zIndex
         });
 
         // create name label and add it and the the content to the container div
         var $slackname = $("<div>", { "class": "slack-name" }).text(username);
-        $div.append($content).append($slackname);
+        $container.append($content).append($slackname);
 
         // display gif/container only once gif has loaded
         // if it's a text post, just show the text
         // TODO handle emoji
         if ($content.hasClass('gif')) {
             $content.on('load', function() {
-                $div.css({ 'opacity': 1 }).addClass('shrinking');
+                $container.css({ 'opacity': 1 }).addClass('growing');
                 console.log('showing gif');
             });
         } else {
-            $div.css({ 'opacity': 1 }).addClass('shrinking');
+            $container.css({ 'opacity': 1 }).addClass('growing');
         }
 
         // remove from dom when animation finishes
-        $div.on('animationend', function() {
+        $container.on('animationend', function() {
             console.log('animationend');
             $(this).remove();
         });
@@ -132,7 +164,7 @@ $(document).ready(function() {
         users[username] = timeNow();
 
         // add the post to the page
-        $main.append($div);
+        $main.append($container);
     }
 
     // test add new gif
@@ -143,9 +175,9 @@ $(document).ready(function() {
                 'width': 500,
                 'height': 362
             };
-        }else{
+        } else {
             var testPost = {
-                'text' : 'When the moon hits your eye like a big pizza pie'
+                'text': 'hit me baby one more time'
             };
         }
         testPost['user'] = 'xoxo person ' + e.key;
