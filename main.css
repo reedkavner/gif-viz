@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:900&display=swap&subset=latin-ext');
 
 :root {
-  --max-scale: 200;
+  --max-scale: 150;
 }
 
 html,

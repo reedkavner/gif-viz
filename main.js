@@ -158,7 +158,7 @@ $(document).ready(function() {
 
         // clean up when items are done growing
         $container.on('animationend', function() {
-            if ( $(this).hasClass('teddxt') ){
+            if ( $(this).hasClass('text') ){
                 $(this).remove();
             }else{
                 $(this).addClass('done-growing');
