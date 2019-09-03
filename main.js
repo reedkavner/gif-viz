@@ -2,7 +2,7 @@ $(document).ready(function() {
 
     // Config constants
     const nameHeight = 20; // height of the slackName div in pixels
-    const baseDuration = 25; //  base animation duration in seconds
+    const baseDuration = 20; //  base animation duration in seconds
     const maxScale = .9; // maximum scale
     const minScale = 0.2; // maximum scale
     const intervalReset = 10; // time in seconds for when a users gif displays at full scale
@@ -158,7 +158,7 @@ $(document).ready(function() {
 
         // clean up when items are done growing
         $container.on('animationend', function() {
-            if ( $(this).hasClass('text') ){
+            if ( $(this).hasClass('teddxt') ){
                 $(this).remove();
             }else{
                 $(this).addClass('done-growing');
