@@ -75,6 +75,10 @@ body {
     vertical-align: bottom;
 }
 
+.text :not(.slack-emoji){
+    display: none;
+}
+
 .slack-name {
     color: white;
     height: 20px;
