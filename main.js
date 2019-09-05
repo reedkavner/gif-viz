@@ -2,11 +2,11 @@ $(document).ready(function() {
 
     // Config constants
     const nameHeight = 20; // height of the slackName div in pixels
-    const baseDuration = 20; //  base animation duration in seconds
+    const baseDuration = 200; //  base animation duration in seconds
     const maxScale = .9; // maximum scale
     const minScale = 0.2; // maximum scale
     const intervalReset = 10; // time in seconds for when a users gif displays at full scale
-    const spawnaArea = .15 // percentage margin around the screen
+    const spawnaArea = .10 // percentage margin around the screen
 
     const $main = $('#main');
 
@@ -123,10 +123,12 @@ $(document).ready(function() {
             // always give text max z
             zIndex = zIndex + 30;
             $content = $("<div>", { "class": "post-content" }).html(j.text);
-            coords = randomPosition(400, 400, scale);
+            var textColor = randomInt(0, 360);
+            $content.css('color', 'hsl(' + textColor + ', 100%, 40%');
+            coords = randomPosition(200, 300, scale);
             $container.css({
-                'width': '400px',
-                'max-height': '400px'
+                'max-height': '400px',
+                'width': '300px'
             });
             $container.addClass('text');
         }
