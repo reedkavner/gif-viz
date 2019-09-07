@@ -127,7 +127,7 @@ $(document).ready(function() {
             $content.css('color', 'hsl(' + textColor + ', 100%, 40%');
             coords = randomPosition(200, 300, scale);
             $container.css({
-                'max-height': '400px',
+                'max-height': '600px',
                 'width': '300px'
             });
             $container.addClass('text');
