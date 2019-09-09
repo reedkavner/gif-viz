@@ -95,6 +95,7 @@ body {
 }
 
 .slack-name {
+    display: none;
     color: white;
     height: 20px;
     font-size: 1.5em;
